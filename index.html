@@ -683,4 +683,75 @@
                 });
                 
                 html += `</div>`;
-          
+            }
+            
+            paymentDisplay.innerHTML = html;
+            
+            // Tambahkan event listener untuk tombol salin
+            document.querySelectorAll('.copy-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const value = this.getAttribute('data-value');
+                    copyToClipboard(value, this);
+                });
+            });
+        }
+
+        // Fungsi untuk menyalin ke clipboard
+        function copyToClipboard(text, button) {
+            navigator.clipboard.writeText(text).then(() => {
+                // Tampilkan feedback
+                const originalText = button.textContent;
+                button.textContent = 'Tersalin!';
+                button.classList.add('copied');
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Gagal menyalin: ', err);
+                alert('Gagal menyalin teks ke clipboard');
+            });
+        }
+
+        // Inisialisasi tampilan pertama dengan QRIS
+        showPaymentDetails('qris');
+
+        // Event listener untuk metode pembayaran
+        methodElements.forEach(methodElement => {
+            methodElement.addEventListener('click', function() {
+                // Hapus kelas active dari semua metode
+                methodElements.forEach(el => el.classList.remove('active'));
+                
+                // Tambahkan kelas active ke metode yang diklik
+                this.classList.add('active');
+                
+                // Tampilkan detail pembayaran
+                const methodKey = this.getAttribute('data-method');
+                paymentDisplay.classList.remove('active');
+                
+                // Tambahkan efek transisi
+                setTimeout(() => {
+                    showPaymentDetails(methodKey);
+                    paymentDisplay.classList.add('active');
+                }, 100);
+            });
+        });
+
+        // Efek hover pada gelembung background
+        document.addEventListener('mousemove', (e) => {
+            const bubbles = document.querySelectorAll('.bubble');
+            const mouseX = e.clientX / window.innerWidth;
+            const mouseY = e.clientY / window.innerHeight;
+            
+            bubbles.forEach((bubble, index) => {
+                const speed = 0.5 + (index * 0.1);
+                const x = (mouseX * 20 * speed) - 10;
+                const y = (mouseY * 20 * speed) - 10;
+                
+                bubble.style.transform = `translate(${x}px, ${y}px)`;
+            });
+        });
+    </script>
+</body>
+</html>
